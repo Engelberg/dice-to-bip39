@@ -6,7 +6,7 @@ Objective: Generate a standard 12-word BIP39 mnemonic from physical dice entropy
 
 This project combines two deliberately small pieces:
 
-1. A pen-and-paper, von Neumann-style debiasing procedure adapted from the [Codex32 dice worksheet](https://secretcodex32.com/docs/2022-09-26--color.pdf). Five differently colored six-sided dice produce one character from the Bech32 alphabet at a time.
+1. A pen-and-paper, von Neumann-style debiasing procedure adapted from the [Codex32 dice worksheet](https://secretcodex32.com/docs/2022-09-26--color.pdf). Five distinguishable dice produce one character from the Bech32 alphabet at a time.
 2. Two independently written, easily audited programs that convert 26 such characters into 128 bits of entropy and then into a standard 12-word BIP39 mnemonic.
 
 The Python and Rust implementations should produce identical entropy and identical words. Neither program generates randomness.
@@ -29,24 +29,36 @@ The output is a **12-word BIP39 mnemonic**. When a wallet restores those words, 
 
 ## What you need
 
-- Five ordinary six-sided dice, each a different color
-- Five movable markers whose colors match the dice; labeled scraps of paper work
-- A printed copy of the two-page D6 worksheet
+- Either five distinguishable D6 dice, or one each of D6, D8, D10, D12, and D20
+- Five movable markers that fit inside the selected worksheet's tracks; coins or bingo chips suit the D6 sheet, while the compact polyhedral tracks need markers about 1/2 inch (12 mm) or smaller, such as beads, small buttons, or folded paper tabs
+- A printed copy of the corresponding two-page worksheet
 - A pen and a private place to work
 - An offline computer on which to run and cross-check both programs
 
-![Five differently colored D6 dice with five matching markers](five-colored-dice-and-markers.png)
+![One possible setup: five differently colored D6 dice with five matching markers](five-colored-dice-and-markers.png)
+
+The photograph shows matching markers because they are visually convenient, but matching is optional. The worksheet row identifies the die, so the five markers need not match the dice or one another.
 
 The dice do not need to have perfectly equal face probabilities. The procedure does assume that successive rolls are independent, that each die's bias stays reasonably stable between the two rolls being compared, and that the dice are rolled in a way that does not intentionally control or correlate the outcomes.
 
-## Printable D6-only debiasing worksheet
+## Printable debiasing worksheets
 
-**[Download the printable D6 worksheet](d6-debiasing-worksheet.pdf).** It is formatted as two landscape US Letter pages intended to be placed side by side:
+Choose whichever option matches the dice you have. Both worksheets are formatted as two landscape US Letter pages intended to be placed side by side, and both produce exactly the same kind of 26-character input.
 
-- Page 1 provides five generously spaced marker tracks and separate `L` and `H` landing pads for the dice after the second roll.
+### Option 1: five distinguishable D6 dice
+
+**[Download the five-D6 worksheet](d6-debiasing-worksheet.pdf).** The dice must be distinguishable so each die can be compared with its own earlier roll. Different colors are convenient; assign them permanently to Die 1 through Die 5 using the lines on page 1.
+
+### Option 2: D6, D8, D10, D12, and D20
+
+**[Download the polyhedral-dice worksheet](polyhedral-debiasing-worksheet.pdf).** The shapes distinguish the dice, so the worksheet uses the fixed order D6, D8, D10, D12, then D20. Treat `0` on the D10 as 10. The D20 track wraps into two rows to keep the marker spaces large enough to use.
+
+For either worksheet:
+
+- Page 1 provides one marker track per die and separate `L` and `H` landing pads for the dice after the second roll.
 - Page 2 provides a large Codex32-style decision tree and the line of 26 character boxes. For each die, follow `L` when the second roll is lower than the first and `H` when it is higher. The five choices lead directly to a character; the user never needs to write or translate binary.
 
-Choose a permanent order for the five die colors and assign them to Die 1 through Die 5. For each character, place the five matching markers according to the first roll. Roll again, compare each die with its marker, and place the die on either the `L` or `H` space depending on whether its value is Lower or Higher than the first roll (recorded with the marker). If a die matches its marker, discard that pair and reroll that die twice; keep the other four accepted comparisons. Follow Die 1 through Die 5 on the character tree, record the result on page 2, and repeat.
+For each character, roll all five dice and place one marker on each row according to that die's first value. Roll again, compare each die with the marker on its row, and place the die on either the `L` or `H` space depending on whether its second value is lower or higher. If the values match, reroll that die twice, move its marker to the first reroll, and compare the second reroll; keep the other four accepted comparisons. Follow the five dice in worksheet order on the character tree, record the result on page 2, and repeat.
 
 The tree uses uppercase characters because they are easier to distinguish when handwritten. Both programs accept uppercase or lowercase input.
 
@@ -62,9 +74,9 @@ Each character represents five L/H choices. The first 25 characters contribute a
 
 The 26 characters and the resulting mnemonic are both wallet secrets. Anyone who obtains either can reproduce the wallet (unless a separate BIP39 passphrase is also required).
 
-Use these programs on a computer that is offline and free of malware—ideally a disposable live operating system such as Tails that will not retain shell history, swap, logs, or printed output. The programs receive the secret as a command-line argument, which ordinary shells may preserve in history and may briefly expose to other local processes. Do not enter real wallet entropy on a normal networked computer merely to try the software.
+Use these programs on a computer that is offline and free of malware—ideally a disposable live operating system, such as Tails with networking disabled and persistent storage off, that will not retain shell history, swap, logs, or program output after shutdown. The programs receive the secret as a command-line argument, which ordinary shells may preserve in history and may briefly expose to other local processes. Do not enter real wallet entropy on a normal networked computer merely to try the software.
 
-The 26-character notation has no checksum of its own. BIP39's four checksum bits are calculated *after* the characters are entered, so they cannot detect an earlier transcription mistake in the character string. Both the Python and Rust programs are small enough and simple enough in scope that they can be easily audited (ask your AI to verify and test these programs). Use whichever you like, or run both implementations independently and compare the displayed entropy hex and all twelve words. The outputted twelve words are your BIP39 mnemonic and you can import this into any hardware wallet. Best practice is to note the receive addresses that are displayed, and then import the mnemonic a second time (either by wiping the hardware wallet and restoring it again, or by restoring it on a second hardware wallet), and then confirm that the receive addresses match. Preserve the final BIP39 mnemonic as the authoritative hardware-wallet backup.
+The 26-character notation has no checksum of its own. BIP39's four checksum bits are calculated *after* the characters are entered, so they cannot detect an earlier transcription mistake in the character string. Both the Python and Rust programs are small enough and simple enough in scope that they can be easily audited (ask your AI to verify and test these programs). Use whichever you like, or run both implementations independently and compare the displayed entropy hex and all twelve words. The twelve output words are your BIP39 mnemonic, which can be imported into a BIP39-compatible hardware wallet that accepts 12-word mnemonics. Best practice is to record several receive addresses and then import the mnemonic a second time—either by wiping and restoring the hardware wallet or, preferably, by restoring it on a second hardware wallet—and confirm that the same addresses are reproduced. Preserve the final BIP39 mnemonic as the authoritative hardware-wallet backup.
 
 ## Python usage
 
