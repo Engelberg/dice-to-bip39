@@ -27,7 +27,7 @@ fn decode_entropy(text: &str) -> Result<[u8; 16], String> {
             // First 25 characters contribute all five bits.
             entropy = (entropy << 5) | value;
         } else {
-            // Final symbol contributes only its three most significant bits.
+            // Final character contributes only its three most significant bits.
             entropy = (entropy << 3) | (value >> 2);
         }
     }
