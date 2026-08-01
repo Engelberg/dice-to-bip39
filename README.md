@@ -1,6 +1,8 @@
 # dice-to-bip39
 
-Generate a standard 12-word BIP39 mnemonic from physical dice entropy without trusting a hardware wallet's random-number generator or assuming that ordinary dice are perfectly balanced.
+## An easily auditable method for converting dice rolls to a BIP39 mnemonic using the Bech32 character set
+
+Objective: Generate a standard 12-word BIP39 mnemonic from physical dice entropy without trusting a hardware wallet's random-number generator or assuming that ordinary dice are perfectly balanced.
 
 This project combines two deliberately small pieces:
 
@@ -44,7 +46,7 @@ The dice do not need to have perfectly equal face probabilities. The procedure d
 - Page 1 provides five generously spaced marker tracks and separate `L` and `H` landing pads for the dice after the second roll.
 - Page 2 provides a large Codex32-style decision tree and the line of 26 character boxes. For each die, follow `L` when the second roll is lower than the first and `H` when it is higher. The five choices lead directly to a character; the user never needs to write or translate binary.
 
-Choose a permanent order for the five die colors and assign them to Die 1 through Die 5. For each character, place the five matching markers according to the first roll. Roll again, compare each die with its marker, and place the die on its `L` or `H` pad. If a die matches its marker, discard that pair and reroll that die twice; keep the other four accepted comparisons. Follow Die 1 through Die 5 on the character tree, record the result on page 2, and repeat.
+Choose a permanent order for the five die colors and assign them to Die 1 through Die 5. For each character, place the five matching markers according to the first roll. Roll again, compare each die with its marker, and place the die on either the `L` or `H` space depending on whether its value is Lower or Higher than the first roll (recorded with the marker). If a die matches its marker, discard that pair and reroll that die twice; keep the other four accepted comparisons. Follow Die 1 through Die 5 on the character tree, record the result on page 2, and repeat.
 
 The tree uses uppercase characters because they are easier to distinguish when handwritten. Both programs accept uppercase or lowercase input.
 
@@ -60,9 +62,9 @@ Each character represents five L/H choices. The first 25 characters contribute a
 
 The 26 characters and the resulting mnemonic are both wallet secrets. Anyone who obtains either can reproduce the wallet (unless a separate BIP39 passphrase is also required).
 
-Use these programs on a computer that is offline and free of malware—ideally a disposable live operating system that will not retain shell history, swap, logs, or printed output. The programs receive the secret as a command-line argument, which ordinary shells may preserve in history and may briefly expose to other local processes. Do not enter real wallet entropy on a normal networked computer merely to try the software.
+Use these programs on a computer that is offline and free of malware—ideally a disposable live operating system such as Tails that will not retain shell history, swap, logs, or printed output. The programs receive the secret as a command-line argument, which ordinary shells may preserve in history and may briefly expose to other local processes. Do not enter real wallet entropy on a normal networked computer merely to try the software.
 
-The 26-character notation has no checksum of its own. BIP39's four checksum bits are calculated *after* the characters are entered, so they cannot detect an earlier transcription mistake in the character string. Run both implementations independently and compare the displayed entropy hex and all twelve words. After importing the mnemonic, confirm that receive addresses displayed by the companion wallet match those displayed on the hardware wallet itself before depositing funds. Preserve the final BIP39 mnemonic as the authoritative hardware-wallet backup.
+The 26-character notation has no checksum of its own. BIP39's four checksum bits are calculated *after* the characters are entered, so they cannot detect an earlier transcription mistake in the character string. Both the Python and Rust programs are small enough and simple enough in scope that they can be easily audited (ask your AI to verify and test these programs). Use whichever you like, or run both implementations independently and compare the displayed entropy hex and all twelve words. The outputted twelve words are your BIP39 mnemonic and you can import this into any hardware wallet. Best practice is to note the receive addresses that are displayed, and then import the mnemonic a second time (either by wiping the hardware wallet and restoring it again, or by restoring it on a second hardware wallet), and then confirm that the receive addresses match. Preserve the final BIP39 mnemonic as the authoritative hardware-wallet backup.
 
 ## Python usage
 
@@ -124,8 +126,8 @@ Before using real entropy:
 For a real wallet:
 
 1. Generate and carefully transcribe 26 debiased characters in private.
-2. Run both programs in separate offline environments or, preferably, on independently prepared machines.
-3. Require identical entropy hex and identical BIP39 mnemonics.
+2. Run both programs in separate offline environments.
+3. Verify the two programs output identical entropy hex and identical BIP39 mnemonics.
 4. Import the mnemonic into the hardware wallet. Before sending funds, test that the backup can reproduce the same wallet—ideally on a spare device—and confirm that receive addresses displayed by the companion wallet match those displayed on the hardware wallet itself.
 5. Securely destroy temporary character worksheets and electronic traces once the recovery backup has been tested and preserved.
 
