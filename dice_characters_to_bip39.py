@@ -9,7 +9,7 @@ The input is NOT a full Bech32 string:
     - no separator
     - no checksum
 
-It is simply 26 base-32 symbols generated using the Bech32 character set.
+It is simply 26 base-32 characters generated using the Bech32 character set.
 
 Characters 1 through 25 contribute 5 bits each: 125 bits.
 Character 26 contributes its 3 most significant bits.
@@ -27,7 +27,7 @@ BECH32_ALPHABET = "qpzry9x8gf2tvdw0s3jn54khce6mua7l"
 
 
 def decode_entropy(text: str) -> bytes:
-    """Decode 26 Bech32-alphabet symbols into exactly 128 bits."""
+    """Decode 26 Bech32-alphabet characters into exactly 128 bits."""
     text = text.strip().lower()
 
     if len(text) != 26:
@@ -49,7 +49,7 @@ def decode_entropy(text: str) -> bytes:
 
     entropy = 0
 
-    # First 25 symbols contribute all five bits.
+    # First 25 characters contribute all five bits.
     for value in values[:25]:
         entropy = (entropy << 5) | value
 
@@ -120,7 +120,7 @@ def main() -> None:
     wordlist = load_wordlist(wordlist_filename)
     mnemonic = entropy_to_mnemonic(entropy, wordlist)
 
-    print("Input symbols:  ", encoded_entropy.lower())
+    print("Input characters:  ", encoded_entropy.lower())
     print("Entropy hex:   ", entropy.hex())
     print("BIP39 mnemonic:", mnemonic)
 
