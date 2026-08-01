@@ -53,7 +53,7 @@ def decode_entropy(text: str) -> bytes:
     for value in values[:25]:
         entropy = (entropy << 5) | value
 
-    # The final symbol contributes only its three most significant bits.
+    # The final character contributes only its three most significant bits.
     #
     # A value from 0 through 31 has binary form abcde.
     # Shifting right by two leaves abc.
