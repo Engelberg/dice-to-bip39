@@ -25,6 +25,11 @@ from pathlib import Path
 
 BECH32_ALPHABET = "qpzry9x8gf2tvdw0s3jn54khce6mua7l"
 
+# SHA-256 of the 2,048 official English words joined by LF, including final LF.
+BIP39_ENGLISH_WORDLIST_SHA256 = (
+    "2f5eed53a4727b4bf8880d8f3f199efc90e58503646d9ff8eff3a2ed3b24dbda"
+)
+
 
 def decode_entropy(text: str) -> bytes:
     """Decode 26 Bech32-alphabet characters into exactly 128 bits."""
@@ -64,7 +69,7 @@ def decode_entropy(text: str) -> bytes:
 
 
 def load_wordlist(filename: str) -> list[str]:
-    """Load a standard 2048-word BIP39 wordlist."""
+    """Load and authenticate the official English BIP39 wordlist."""
     words = Path(filename).read_text(encoding="utf-8").splitlines()
     words = [word.strip() for word in words if word.strip()]
 
@@ -75,6 +80,17 @@ def load_wordlist(filename: str) -> list[str]:
 
     if len(set(words)) != 2048:
         raise ValueError("The wordlist contains duplicate words.")
+
+    # Hash a canonical rendering so LF and CRLF source files behave identically.
+    canonical_wordlist = ("\n".join(words) + "\n").encode("utf-8")
+    actual_hash = hashlib.sha256(canonical_wordlist).hexdigest()
+
+    if actual_hash != BIP39_ENGLISH_WORDLIST_SHA256:
+        raise ValueError(
+            "The wordlist does not match the official English BIP39 list. "
+            f"Expected SHA-256 {BIP39_ENGLISH_WORDLIST_SHA256}, "
+            f"but found {actual_hash}."
+        )
 
     return words
 

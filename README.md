@@ -129,7 +129,7 @@ For a real wallet:
 4. Import the mnemonic into the hardware wallet. Before sending funds, test that the backup can reproduce the same wallet—ideally on a spare device—and confirm that receive addresses displayed by the companion wallet match those displayed on the hardware wallet itself.
 5. Securely destroy temporary character worksheets and electronic traces once the recovery backup has been tested and preserved.
 
-The included `english.txt` is the official [BIP39 English word list](https://github.com/bitcoin/bips/blob/master/bip-0039/english.txt). The conversion follows the [BIP39 specification](https://github.com/bitcoin/bips/blob/master/bip-0039.mediawiki): SHA-256 supplies a four-bit checksum for 128-bit entropy, producing 132 bits that divide into twelve 11-bit word indices.
+The included `english.txt` is the official [BIP39 English word list](https://github.com/bitcoin/bips/blob/master/bip-0039/english.txt). Both programs verify its canonical SHA-256 hash and refuse to continue if any word or its position has changed. The conversion follows the [BIP39 specification](https://github.com/bitcoin/bips/blob/master/bip-0039.mediawiki): SHA-256 supplies a four-bit checksum for 128-bit entropy, producing 132 bits that divide into twelve 11-bit word indices.
 
 ## Scope
 

@@ -4,6 +4,10 @@ use std::process;
 
 const BECH32_ALPHABET: &str = "qpzry9x8gf2tvdw0s3jn54khce6mua7l";
 
+// SHA-256 of the 2,048 official English words joined by LF, including final LF.
+const BIP39_ENGLISH_WORDLIST_SHA256: &str =
+    "2f5eed53a4727b4bf8880d8f3f199efc90e58503646d9ff8eff3a2ed3b24dbda";
+
 fn decode_entropy(text: &str) -> Result<[u8; 16], String> {
     let text = text.trim().to_ascii_lowercase();
     let chars: Vec<char> = text.chars().collect();
@@ -182,13 +186,16 @@ fn load_wordlist(filename: &str) -> Result<Vec<String>, String> {
         ));
     }
 
-    if filename.ends_with("english.txt")
-        && (words[0] != "abandon" || words[2047] != "zoo")
-    {
-        return Err(
-            "The English word list has unexpected first or last words."
-                .to_string(),
-        );
+    // Hash a canonical rendering so LF and CRLF source files behave identically.
+    let canonical_wordlist = words.join("\n") + "\n";
+    let actual_hash = hex_encode(&sha256(canonical_wordlist.as_bytes()));
+
+    if actual_hash != BIP39_ENGLISH_WORDLIST_SHA256 {
+        return Err(format!(
+            "The wordlist does not match the official English BIP39 list. \
+             Expected SHA-256 {BIP39_ENGLISH_WORDLIST_SHA256}, \
+             but found {actual_hash}."
+        ));
     }
 
     Ok(words)
